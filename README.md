@@ -215,7 +215,8 @@ npm run build --workspace=@car-dealership/client
 
 ---
 
-## Running Tests
+## Test Report
+Backend automated tests were implemented using Jest and Supertest.
 
 Run Backend Tests
 
@@ -223,9 +224,23 @@ Run Backend Tests
 npm run test --workspace=@car-dealership/server
 ```
 
-Current Status:
+### Test Summary
 
-- ✅ 31 Tests Passing
+| Category | Status |
+|----------|--------|
+| Authentication | ✅ Passed |
+| Vehicle CRUD | ✅ Passed |
+| Inventory Operations | ✅ Passed |
+| Search API | ✅ Passed |
+
+**Overall Result**
+
+```
+31 tests passed
+0 failed
+```
+
+Both the frontend and backend production builds complete successfully.
 
 ---
 
@@ -298,6 +313,54 @@ Add screenshots of the following pages:
 - Purchase Workflow
 ![purchase](server/images/image-5.png)
 ![Restock](server/images/image-6.png)
+
+---
+
+## My AI Usage
+
+This project was developed with the assistance of AI tools while ensuring that I reviewed, understood, tested, and integrated all generated code.
+
+### AI Tools Used
+
+- OpenAI ChatGPT
+- OpenAI Codex
+
+### How I Used AI
+
+During development, I used AI as an engineering assistant throughout different phases of the project.
+
+Examples include:
+
+- Planning the project architecture.
+- Designing the PostgreSQL database schema.
+- Creating Prisma models and migrations.
+- Generating Express controllers, services, repositories, and middleware.
+- Implementing JWT authentication and authorization.
+- Building React components and pages.
+- Developing CRUD operations for vehicle management.
+- Implementing inventory purchase and restock workflows.
+- Creating search functionality using multiple filters.
+- Writing and debugging Jest and Supertest test cases.
+- Troubleshooting Prisma, PostgreSQL, TypeScript, React, and build errors.
+- Improving UI components and project documentation.
+
+### My Contribution
+
+Although AI generated portions of the implementation, I:
+
+- Reviewed every generated code segment.
+- Integrated frontend and backend components.
+- Fixed compilation and runtime errors.
+- Configured PostgreSQL and Prisma locally.
+- Performed testing and debugging.
+- Verified all project functionality before submission.
+- Made design decisions and ensured the final implementation met the assignment requirements.
+
+### Reflection
+
+Using AI significantly improved my development workflow by reducing repetitive coding tasks and helping diagnose errors quickly. It also provided implementation suggestions and explanations that improved my understanding of full-stack development.
+
+However, I verified every generated solution instead of accepting it blindly. I tested the application after each phase, debugged issues manually, and ensured the final project met the required specifications.
 
 ---
 
