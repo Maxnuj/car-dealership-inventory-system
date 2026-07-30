@@ -29,3 +29,9 @@ export class ForbiddenError extends AppError {
     super(403, 'FORBIDDEN', message);
   }
 }
+
+export class NotFoundError extends AppError {
+  public constructor(message: string) {
+    super(404, 'NOT_FOUND', message);
+  }
+}

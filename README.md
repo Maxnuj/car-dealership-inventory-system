@@ -28,6 +28,10 @@ The normalized PostgreSQL schema design, ER diagram, indexes, constraints, and t
 
 Prisma schema and reviewed migrations live in `server/prisma/`. After dependencies are installed, validate the schema with `npm run db:validate --workspace=@car-dealership/server`.
 
+## API
+
+Vehicle reads are public: `GET /api/vehicles` and `GET /api/vehicles/:id`. Vehicle creation, updates, and archival deletion require a bearer JWT for an `ADMIN` user: `POST /api/vehicles`, `PUT /api/vehicles/:id`, and `DELETE /api/vehicles/:id`.
+
 ## Planned phases
 
 1. Project initialization — complete
