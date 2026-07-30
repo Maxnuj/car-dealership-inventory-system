@@ -286,18 +286,18 @@ Authorization: Bearer <JWT_TOKEN>
 Add screenshots of the following pages:
 
 - Login Page
-![alt text](image.png)
+![Login](images/image.png)
 - Registration Page
-![alt text](image-1.png)
+![Registration](images/image-1.png)
 - Dashboard
-![alt text](image-2.png)
+![Dashboard](images/image-2.png)
 - Vehicle Management
-![alt text](image-3.png)
+![Management](images/image-3.png)
 - Search
-![alt text](image-4.png)
+![Search](images/image-4.png)
 - Purchase Workflow
-![alt text](image-5.png)
-![alt text](image-6.png)
+![purchase](images/image-5.png)
+![Restock](images/image-6.png)
 
 ---
 
