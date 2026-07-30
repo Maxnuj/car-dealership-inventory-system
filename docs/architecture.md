@@ -4,7 +4,7 @@
 
 The system is a two-application npm workspace: a React single-page application in `client/` and an Express API in `server/`. The API owns business rules and data access. The client renders data and sends validated user input; it never decides permissions, inventory availability, or prices.
 
-![alt text](flowchart.png)
+![flowchart](img/flowchart.png)
 
 ## Server layering
 
@@ -24,7 +24,7 @@ Prisma is accessed only from repositories. Multi-repository database work is ini
 
 ## Request and error flow
 
-![alt text](sequenceDiagram.png)
+![sequenceDiagram](img/sequenceDiagram.png)
 
 Controllers use one shared response helper for the success envelope. Services throw typed operational errors for expected cases (for example, a missing vehicle, insufficient stock, or forbidden action); centralized error middleware converts them into the failure envelope. Unknown errors are logged with a request correlation ID and returned as a generic 500 response without internal details.
 
