@@ -295,8 +295,8 @@ Add screenshots of the following pages:
 ![alt text](image-3.png)
 - Search
 ![alt text](image-4.png)
-- Purchase Workflow!
-[alt text](image-5.png)
+- Purchase Workflow
+![alt text](image-5.png)
 ![alt text](image-6.png)
 
 ---
