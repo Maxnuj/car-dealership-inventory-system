@@ -32,6 +32,8 @@ Prisma schema and reviewed migrations live in `server/prisma/`. After dependenci
 
 Vehicle reads are public: `GET /api/vehicles` and `GET /api/vehicles/:id`. Vehicle creation, updates, and archival deletion require a bearer JWT for an `ADMIN` user: `POST /api/vehicles`, `PUT /api/vehicles/:id`, and `DELETE /api/vehicles/:id`.
 
+Public vehicle search is available at `GET /api/vehicles/search` with optional `make`, `model`, `category`, `minPrice`, and `maxPrice` query parameters. Text filters are case-insensitive and all supplied filters are combined.
+
 Authenticated users may purchase inventory with `POST /api/vehicles/:id/purchase`; it atomically reduces inventory and records the purchase. `POST /api/vehicles/:id/restock` is restricted to `ADMIN` users and atomically increases inventory.
 
 ## Planned phases

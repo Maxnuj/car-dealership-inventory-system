@@ -1,7 +1,7 @@
 import type { Vehicle } from '@prisma/client';
 
 import type { VehicleRepositoryPort } from '../repositories/vehicle.repository.js';
-import type { CreateVehicleInput, UpdateVehicleInput } from '../validators/vehicle.validator.js';
+import type { CreateVehicleInput, SearchVehiclesInput, UpdateVehicleInput } from '../validators/vehicle.validator.js';
 import { NotFoundError } from '../utils/app-error.js';
 import { InsufficientStockError } from '../utils/app-error.js';
 
@@ -12,6 +12,7 @@ export interface VehicleServicePort {
   purchase(id: string, userId: string, quantity: number): Promise<Vehicle>;
   remove(id: string): Promise<Vehicle>;
   restock(id: string, quantity: number): Promise<Vehicle>;
+  search(filters: SearchVehiclesInput): Promise<Vehicle[]>;
   update(id: string, input: UpdateVehicleInput): Promise<Vehicle>;
 }
 
@@ -24,6 +25,10 @@ export class VehicleService implements VehicleServicePort {
 
   public getAll(): Promise<Vehicle[]> {
     return this.vehicles.findAllActive();
+  }
+
+  public search(filters: SearchVehiclesInput): Promise<Vehicle[]> {
+    return this.vehicles.search(filters);
   }
 
   public async getById(id: string): Promise<Vehicle> {

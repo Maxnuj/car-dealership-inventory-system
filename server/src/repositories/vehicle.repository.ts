@@ -1,5 +1,7 @@
 import { PrismaClient, type Prisma, type Vehicle } from '@prisma/client';
 
+import type { SearchVehiclesInput } from '../validators/vehicle.validator.js';
+
 export type CreateVehicleData = Prisma.VehicleCreateInput;
 export type UpdateVehicleData = Prisma.VehicleUpdateInput;
 export type PurchaseResult =
@@ -16,6 +18,7 @@ export interface VehicleRepositoryPort {
   findById(id: string): Promise<Vehicle | null>;
   purchase(id: string, userId: string, quantity: number): Promise<PurchaseResult>;
   restock(id: string, quantity: number): Promise<RestockResult>;
+  search(filters: SearchVehiclesInput): Promise<Vehicle[]>;
   update(id: string, data: UpdateVehicleData): Promise<Vehicle>;
 }
 
@@ -36,6 +39,20 @@ export class VehicleRepository implements VehicleRepositoryPort {
 
   public findById(id: string): Promise<Vehicle | null> {
     return this.client.vehicle.findUnique({ where: { id } });
+  }
+
+  public search(filters: SearchVehiclesInput): Promise<Vehicle[]> {
+    const { make, model, category, minPrice, maxPrice } = filters;
+    const where: Prisma.VehicleWhereInput = {
+      isActive: true,
+      ...(make === undefined ? {} : { make: { contains: make, mode: 'insensitive' } }),
+      ...(model === undefined ? {} : { model: { contains: model, mode: 'insensitive' } }),
+      ...(category === undefined ? {} : { category: { contains: category, mode: 'insensitive' } }),
+      ...(minPrice === undefined && maxPrice === undefined
+        ? {}
+        : { price: { ...(minPrice === undefined ? {} : { gte: minPrice }), ...(maxPrice === undefined ? {} : { lte: maxPrice }) } }),
+    };
+    return this.client.vehicle.findMany({ where, orderBy: { createdAt: 'desc' } });
   }
 
   public update(id: string, data: UpdateVehicleData): Promise<Vehicle> {

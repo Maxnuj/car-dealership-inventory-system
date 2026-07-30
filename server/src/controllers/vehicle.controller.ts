@@ -3,6 +3,7 @@ import type { RequestHandler } from 'express';
 import type { VehicleServicePort } from '../services/vehicle.service.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { success } from '../utils/response.js';
+import type { SearchVehiclesInput } from '../validators/vehicle.validator.js';
 
 export class VehicleController {
   public constructor(private readonly vehicleService: VehicleServicePort) {}
@@ -17,6 +18,10 @@ export class VehicleController {
 
   public getById: RequestHandler = asyncHandler(async (request, response) => {
     success(response, await this.vehicleService.getById(request.params.id as string));
+  });
+
+  public search: RequestHandler = asyncHandler(async (_request, response) => {
+    success(response, await this.vehicleService.search(response.locals.validatedQuery as SearchVehiclesInput));
   });
 
   public update: RequestHandler = asyncHandler(async (request, response) => {

@@ -26,6 +26,7 @@ const service: jest.Mocked<VehicleServicePort> = {
   purchase: jest.fn(),
   remove: jest.fn(),
   restock: jest.fn(),
+  search: jest.fn(),
   update: jest.fn(),
 };
 const app = express();
@@ -51,6 +52,32 @@ describe('vehicle routes', () => {
     const response = await request(app).get('/api/vehicles');
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
+  });
+
+  it.each([
+    ['make', '?make=tesla'],
+    ['model', '?model=model%203'],
+    ['category', '?category=sedan'],
+    ['price range', '?minPrice=40000&maxPrice=50000'],
+    ['combined filters', '?make=tesla&model=model%203&category=sedan&minPrice=40000&maxPrice=50000'],
+  ])('searches publicly by %s', async (_name, query) => {
+    service.search.mockResolvedValue([vehicle] as never);
+    const response = await request(app).get(`/api/vehicles/search${query}`);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveLength(1);
+  });
+
+  it('returns an empty array when no search results match', async () => {
+    service.search.mockResolvedValue([]);
+    const response = await request(app).get('/api/vehicles/search?make=unknown');
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual([]);
+  });
+
+  it('rejects invalid search query parameters', async () => {
+    const response = await request(app).get('/api/vehicles/search?minPrice=100&maxPrice=10');
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
   });
 
   it('returns a vehicle by ID publicly', async () => {

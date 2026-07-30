@@ -25,6 +25,7 @@ describe('VehicleService', () => {
     findById: jest.fn(),
     purchase: jest.fn(),
     restock: jest.fn(),
+    search: jest.fn(),
     update: jest.fn(),
   };
   const service = new VehicleService(repository);
@@ -81,5 +82,13 @@ describe('VehicleService', () => {
     repository.restock.mockResolvedValue({ status: 'restocked', vehicle: { ...vehicle, quantity: 7 } });
 
     await expect(service.restock(vehicle.id, 3)).resolves.toMatchObject({ quantity: 7 });
+  });
+
+  it('delegates combined search filters to Prisma-backed repository search', async () => {
+    repository.search.mockResolvedValue([vehicle]);
+    const filters = { make: 'tesla', category: 'sedan', minPrice: 40000, maxPrice: 50000 };
+
+    await expect(service.search(filters)).resolves.toEqual([vehicle]);
+    expect(repository.search).toHaveBeenCalledWith(filters);
   });
 });

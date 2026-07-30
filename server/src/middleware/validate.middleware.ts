@@ -24,3 +24,14 @@ export const validateParams = (schema: ZodType): RequestHandler => (request, _re
   request.params = parsed.data as ParamsDictionary;
   next();
 };
+
+export const validateQuery = (schema: ZodType): RequestHandler => (request, response, next) => {
+  const parsed = schema.safeParse(request.query);
+  if (!parsed.success) {
+    next(new AppError(400, 'VALIDATION_ERROR', 'Request validation failed', parsed.error.issues));
+    return;
+  }
+
+  response.locals.validatedQuery = parsed.data;
+  next();
+};
