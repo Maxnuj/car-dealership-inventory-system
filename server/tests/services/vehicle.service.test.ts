@@ -1,4 +1,4 @@
-import { NotFoundError } from '../../src/utils/app-error.js';
+import { InsufficientStockError, NotFoundError } from '../../src/utils/app-error.js';
 import type { VehicleRepositoryPort } from '../../src/repositories/vehicle.repository.js';
 import { VehicleService } from '../../src/services/vehicle.service.js';
 
@@ -23,6 +23,8 @@ describe('VehicleService', () => {
     findActiveById: jest.fn(),
     findAllActive: jest.fn(),
     findById: jest.fn(),
+    purchase: jest.fn(),
+    restock: jest.fn(),
     update: jest.fn(),
   };
   const service = new VehicleService(repository);
@@ -61,5 +63,23 @@ describe('VehicleService', () => {
     repository.archive.mockResolvedValue({ ...vehicle, isActive: false });
 
     await expect(service.remove(vehicle.id)).resolves.toMatchObject({ isActive: false });
+  });
+
+  it('returns updated inventory for a successful purchase', async () => {
+    repository.purchase.mockResolvedValue({ status: 'purchased', vehicle: { ...vehicle, quantity: 2 } });
+
+    await expect(service.purchase(vehicle.id, 'user-id', 2)).resolves.toMatchObject({ quantity: 2 });
+  });
+
+  it('rejects a purchase that would oversell inventory', async () => {
+    repository.purchase.mockResolvedValue({ status: 'insufficient_stock' });
+
+    await expect(service.purchase(vehicle.id, 'user-id', 9)).rejects.toBeInstanceOf(InsufficientStockError);
+  });
+
+  it('restocks an existing vehicle', async () => {
+    repository.restock.mockResolvedValue({ status: 'restocked', vehicle: { ...vehicle, quantity: 7 } });
+
+    await expect(service.restock(vehicle.id, 3)).resolves.toMatchObject({ quantity: 7 });
   });
 });

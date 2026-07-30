@@ -26,4 +26,12 @@ export class VehicleController {
   public remove: RequestHandler = asyncHandler(async (request, response) => {
     success(response, await this.vehicleService.remove(request.params.id as string));
   });
+
+  public purchase: RequestHandler = asyncHandler(async (request, response) => {
+    success(response, await this.vehicleService.purchase(request.params.id as string, request.auth!.sub, request.body.quantity));
+  });
+
+  public restock: RequestHandler = asyncHandler(async (request, response) => {
+    success(response, await this.vehicleService.restock(request.params.id as string, request.body.quantity));
+  });
 }

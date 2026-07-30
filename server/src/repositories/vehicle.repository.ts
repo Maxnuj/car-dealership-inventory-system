@@ -2,6 +2,11 @@ import { PrismaClient, type Prisma, type Vehicle } from '@prisma/client';
 
 export type CreateVehicleData = Prisma.VehicleCreateInput;
 export type UpdateVehicleData = Prisma.VehicleUpdateInput;
+export type PurchaseResult =
+  | { status: 'not_found' }
+  | { status: 'insufficient_stock' }
+  | { status: 'purchased'; vehicle: Vehicle };
+export type RestockResult = { status: 'not_found' } | { status: 'restocked'; vehicle: Vehicle };
 
 export interface VehicleRepositoryPort {
   archive(id: string): Promise<Vehicle>;
@@ -9,6 +14,8 @@ export interface VehicleRepositoryPort {
   findActiveById(id: string): Promise<Vehicle | null>;
   findAllActive(): Promise<Vehicle[]>;
   findById(id: string): Promise<Vehicle | null>;
+  purchase(id: string, userId: string, quantity: number): Promise<PurchaseResult>;
+  restock(id: string, quantity: number): Promise<RestockResult>;
   update(id: string, data: UpdateVehicleData): Promise<Vehicle>;
 }
 
@@ -37,5 +44,33 @@ export class VehicleRepository implements VehicleRepositoryPort {
 
   public archive(id: string): Promise<Vehicle> {
     return this.client.vehicle.update({ where: { id }, data: { isActive: false } });
+  }
+
+  public async purchase(id: string, userId: string, quantity: number): Promise<PurchaseResult> {
+    return this.client.$transaction(async (transaction) => {
+      const vehicle = await transaction.vehicle.findFirst({ where: { id, isActive: true } });
+      if (!vehicle) return { status: 'not_found' };
+
+      const decrement = await transaction.vehicle.updateMany({
+        where: { id, isActive: true, quantity: { gte: quantity } },
+        data: { quantity: { decrement: quantity } },
+      });
+      if (decrement.count === 0) return { status: 'insufficient_stock' };
+
+      const updatedVehicle = await transaction.vehicle.findUniqueOrThrow({ where: { id } });
+      await transaction.purchase.create({
+        data: { userId, vehicleId: id, quantity, unitPrice: vehicle.price },
+      });
+      return { status: 'purchased', vehicle: updatedVehicle };
+    });
+  }
+
+  public async restock(id: string, quantity: number): Promise<RestockResult> {
+    const update = await this.client.vehicle.updateMany({
+      where: { id },
+      data: { quantity: { increment: quantity } },
+    });
+    if (update.count === 0) return { status: 'not_found' };
+    return { status: 'restocked', vehicle: await this.client.vehicle.findUniqueOrThrow({ where: { id } }) };
   }
 }

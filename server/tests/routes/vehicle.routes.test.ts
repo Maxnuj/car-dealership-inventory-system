@@ -6,6 +6,7 @@ import { VehicleController } from '../../src/controllers/vehicle.controller.js';
 import { errorHandler, notFoundHandler } from '../../src/middleware/error.middleware.js';
 import { createVehicleRouter } from '../../src/routes/vehicle.routes.js';
 import type { VehicleServicePort } from '../../src/services/vehicle.service.js';
+import { InsufficientStockError, NotFoundError } from '../../src/utils/app-error.js';
 
 const vehicle = {
   id: '2ac5c5e4-2ce3-456c-9188-2369b7cb2c72',
@@ -22,7 +23,9 @@ const service: jest.Mocked<VehicleServicePort> = {
   create: jest.fn(),
   getAll: jest.fn(),
   getById: jest.fn(),
+  purchase: jest.fn(),
   remove: jest.fn(),
+  restock: jest.fn(),
   update: jest.fn(),
 };
 const app = express();
@@ -73,5 +76,44 @@ describe('vehicle routes', () => {
   it('rejects unauthenticated and non-admin mutation attempts', async () => {
     await expect(request(app).post('/api/vehicles').send(input)).resolves.toMatchObject({ status: 401 });
     await expect(request(app).post('/api/vehicles').set('Authorization', `Bearer ${userToken}`).send(input)).resolves.toMatchObject({ status: 403 });
+  });
+
+  it('purchases a vehicle for an authenticated user', async () => {
+    service.purchase.mockResolvedValue({ ...vehicle, quantity: 3 } as never);
+    const response = await request(app)
+      .post(`/api/vehicles/${vehicle.id}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ quantity: 1 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.quantity).toBe(3);
+  });
+
+  it('reports purchase inventory conflicts and missing vehicles', async () => {
+    service.purchase.mockRejectedValueOnce(new InsufficientStockError());
+    const conflict = await request(app)
+      .post(`/api/vehicles/${vehicle.id}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ quantity: 10 });
+    expect(conflict.status).toBe(409);
+
+    service.purchase.mockRejectedValueOnce(new NotFoundError('Vehicle not found'));
+    const missing = await request(app)
+      .post(`/api/vehicles/${vehicle.id}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ quantity: 1 });
+    expect(missing.status).toBe(404);
+  });
+
+  it('rejects invalid and unauthenticated purchases', async () => {
+    await expect(request(app).post(`/api/vehicles/${vehicle.id}/purchase`).send({ quantity: 1 })).resolves.toMatchObject({ status: 401 });
+    await expect(request(app).post(`/api/vehicles/${vehicle.id}/purchase`).set('Authorization', `Bearer ${userToken}`).send({ quantity: 0 })).resolves.toMatchObject({ status: 400 });
+  });
+
+  it('restocks for an ADMIN and rejects invalid or USER requests', async () => {
+    service.restock.mockResolvedValue({ ...vehicle, quantity: 8 } as never);
+    await expect(request(app).post(`/api/vehicles/${vehicle.id}/restock`).set('Authorization', `Bearer ${adminToken}`).send({ quantity: 4 })).resolves.toMatchObject({ status: 200 });
+    await expect(request(app).post(`/api/vehicles/${vehicle.id}/restock`).set('Authorization', `Bearer ${adminToken}`).send({ quantity: 0 })).resolves.toMatchObject({ status: 400 });
+    await expect(request(app).post(`/api/vehicles/${vehicle.id}/restock`).set('Authorization', `Bearer ${userToken}`).send({ quantity: 4 })).resolves.toMatchObject({ status: 403 });
   });
 });

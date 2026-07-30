@@ -18,6 +18,12 @@ export class ConflictError extends AppError {
   }
 }
 
+export class InsufficientStockError extends AppError {
+  public constructor() {
+    super(409, 'INSUFFICIENT_STOCK', 'Insufficient stock');
+  }
+}
+
 export class UnauthorizedError extends AppError {
   public constructor(message = 'Invalid email or password') {
     super(401, 'UNAUTHORIZED', message);

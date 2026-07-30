@@ -16,6 +16,9 @@ export const updateVehicleSchema = z
   .partial()
   .refine((value) => Object.keys(value).length > 0, 'At least one field must be supplied');
 export const vehicleIdParamsSchema = z.object({ id: z.string().uuid() });
+export const inventoryQuantitySchema = z.object({
+  quantity: z.coerce.number().int().positive('Quantity must be greater than zero'),
+});
 
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>;
 export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>;
