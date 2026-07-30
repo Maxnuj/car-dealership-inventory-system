@@ -1,0 +1,10 @@
+{
+  "name": "@car-dealership/client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "lint": "eslint . --max-warnings=0"
+  }
+}

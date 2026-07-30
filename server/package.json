@@ -1,0 +1,43 @@
+{
+  "name": "@car-dealership/server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:validate": "prisma validate",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --max-warnings=0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.3.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.0.5",
+    "prisma": "^6.14.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}

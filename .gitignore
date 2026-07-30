@@ -1,0 +1,30 @@
+# Dependencies and package-manager diagnostics
+node_modules/
+npm-debug.log*
+
+# Build and coverage artifacts
+dist/
+coverage/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Prisma local development data
+server/prisma/*.db
+server/prisma/*.db-journal
+
+# Editor and operating-system artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local generated files
+*.log
+
+# Local npm cache
+work/
