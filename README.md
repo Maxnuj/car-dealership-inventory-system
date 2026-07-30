@@ -1,53 +1,327 @@
 # Car Dealership Inventory System
 
-A full-stack inventory and purchasing platform for car dealerships. The repository is organised as an npm workspace monorepo:
+A full-stack web application for managing vehicle inventory in a car dealership. The system enables secure user authentication, vehicle inventory management, purchasing and restocking operations, and advanced search functionality through a responsive React frontend and a robust Express backend.
 
-- `client/` — React, TypeScript, Vite, and Tailwind application.
-- `server/` — Express, TypeScript, Prisma, and PostgreSQL API.
-- `docs/` — architecture, API, database, deployment, and developer documentation.
+---
+
+## Features
+
+### Authentication
+- User Registration
+- User Login
+- JWT-based Authentication
+- Protected Routes
+- Role-Based Authorization (Admin/User)
+
+### Vehicle Management
+- Add New Vehicle
+- Edit Vehicle Details
+- Archive (Delete) Vehicle
+- View Available Inventory
+
+### Inventory Management
+- Purchase Vehicles
+- Restock Inventory
+- Automatic Quantity Updates
+- Purchase Disabled When Stock Reaches Zero
+
+### Search
+- Search by Make
+- Search by Model
+- Search by Category
+- Search by Price Range
+- Combined Search Filters
+
+---
+
+## Technology Stack
+
+### Frontend
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+- TypeScript
+
+### Database
+- PostgreSQL
+- Prisma ORM
+
+### Authentication
+- JSON Web Token (JWT)
+- bcrypt
+
+### Testing
+- Jest
+- Supertest
+
+---
+
+## Project Structure
+
+```
+car-dealership-inventory-system/
+│
+├── client/                 # React Frontend
+│   ├── src/
+│   ├── public/
+│   └── ...
+│
+├── server/                 # Express Backend
+│   ├── prisma/
+│   ├── src/
+│   └── ...
+│
+├── docs/                   # Project Documentation
+│
+├── package.json
+└── README.md
+```
+
+---
 
 ## Prerequisites
 
-- Node.js 22 or newer (see `.nvmrc`)
-- npm 10 or newer
-- PostgreSQL 16 or newer
+Before running the project, ensure the following are installed:
 
-## Getting started
+- Node.js (v22 or later)
+- npm (v10 or later)
+- PostgreSQL (v16 or later)
 
-1. Copy `server/.env.example` to `server/.env` and set secure local values.
-2. Copy `client/.env.example` to `client/.env` if the default API address differs.
-3. Install workspace dependencies with `npm.cmd install` on Windows PowerShell (or `npm install` in shells that allow the npm PowerShell shim).
+---
 
-Application implementation begins in the subsequent, deliberately gated phases.
+## Installation
 
-## Architecture
+### Clone the Repository
 
-The layered-architecture contract, component ownership, dependency rules, and request flow are documented in [docs/architecture.md](docs/architecture.md).
+```bash
+git clone https://github.com/Maxnuj/car-dealership-inventory-system.git
+cd car-dealership-inventory-system
+```
 
-The normalized PostgreSQL schema design, ER diagram, indexes, constraints, and transaction rules are documented in [docs/database-design.md](docs/database-design.md).
+### Install Dependencies
 
-Prisma schema and reviewed migrations live in `server/prisma/`. After dependencies are installed, validate the schema with `npm run db:validate --workspace=@car-dealership/server`.
+```bash
+npm install
+```
 
-## API
+---
 
-Vehicle reads are public: `GET /api/vehicles` and `GET /api/vehicles/:id`. Vehicle creation, updates, and archival deletion require a bearer JWT for an `ADMIN` user: `POST /api/vehicles`, `PUT /api/vehicles/:id`, and `DELETE /api/vehicles/:id`.
+## Environment Variables
 
-Public vehicle search is available at `GET /api/vehicles/search` with optional `make`, `model`, `category`, `minPrice`, and `maxPrice` query parameters. Text filters are case-insensitive and all supplied filters are combined.
+### Backend
 
-Authenticated users may purchase inventory with `POST /api/vehicles/:id/purchase`; it atomically reduces inventory and records the purchase. `POST /api/vehicles/:id/restock` is restricted to `ADMIN` users and atomically increases inventory.
+Create a file named:
 
-## Planned phases
+```
+server/.env
+```
 
-1. Project initialization — complete
-2. Architecture
-3. Database design
-4. Prisma models
-5. Authentication
-6. Vehicle CRUD
-7. Inventory operations
-8. Search
-9. Frontend
-10. Integration
-11. Testing
-12. Documentation
-13. Deployment
+Example:
+
+```env
+NODE_ENV=development
+PORT=4000
+
+DATABASE_URL=postgresql://username:password@localhost:5432/car_dealership
+
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=1h
+
+CORS_ORIGIN=http://localhost:5173
+```
+
+---
+
+### Frontend
+
+Create:
+
+```
+client/.env
+```
+
+Example:
+
+```env
+VITE_API_BASE_URL=http://localhost:4000/api
+```
+
+---
+
+## Database Setup
+
+Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+Run Database Migrations
+
+```bash
+npx prisma migrate dev
+```
+
+(Optional) Open Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+---
+
+## Running the Application
+
+### Start Backend
+
+```bash
+npm run dev --workspace=@car-dealership/server
+```
+
+### Start Frontend
+
+```bash
+npm run dev --workspace=@car-dealership/client
+```
+
+Open the application in your browser:
+
+```
+http://localhost:5173
+```
+
+---
+
+## Build Project
+
+### Backend
+
+```bash
+npm run build --workspace=@car-dealership/server
+```
+
+### Frontend
+
+```bash
+npm run build --workspace=@car-dealership/client
+```
+
+---
+
+## Running Tests
+
+Run Backend Tests
+
+```bash
+npm run test --workspace=@car-dealership/server
+```
+
+Current Status:
+
+- ✅ 31 Tests Passing
+
+---
+
+## API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/login` | Login user |
+
+---
+
+### Vehicles
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/vehicles` | Get all vehicles |
+| GET | `/api/vehicles/:id` | Get vehicle details |
+| POST | `/api/vehicles` | Add vehicle (Admin) |
+| PUT | `/api/vehicles/:id` | Update vehicle (Admin) |
+| DELETE | `/api/vehicles/:id` | Archive vehicle (Admin) |
+
+---
+
+### Inventory
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/vehicles/:id/purchase` | Purchase vehicle |
+| POST | `/api/vehicles/:id/restock` | Restock inventory (Admin) |
+
+---
+
+### Search
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/vehicles/search` | Search vehicles using make, model, category, and price range |
+
+---
+
+## Authentication
+
+The application uses **JWT (JSON Web Tokens)** for authentication.
+
+Protected endpoints require the following HTTP header:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+---
+
+## Screenshots
+
+Add screenshots of the following pages:
+
+- Login Page
+![alt text](image.png)
+- Registration Page
+![alt text](image-1.png)
+- Dashboard
+![alt text](image-2.png)
+- Vehicle Management
+![alt text](image-3.png)
+- Search
+![alt text](image-4.png)
+- Purchase Workflow!
+[alt text](image-5.png)
+[alt text](image-6.png)
+
+---
+
+## Future Enhancements
+
+- Vehicle Image Upload
+- Sales Analytics Dashboard
+- Pagination
+- Sorting Options
+- Docker Deployment
+- Email Notifications
+- Cloud Deployment
+
+---
+
+## Author
+
+**Manuj Kumar**
+
+BE Computer Science & Engineering  
+Chandigarh University
+
+---
+
+## License
+
+This project was developed for academic purposes as part of the AI-Assisted Software Development assignment.
